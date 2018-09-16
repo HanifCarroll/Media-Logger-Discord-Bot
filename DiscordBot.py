@@ -19,7 +19,8 @@ domains = [
     'https://open.spotify.com/'
 ]
 
-database_url = 'http://localhost:8000/logger/new'
+BACKEND_URL = os.environ.get(
+    "BACKEND_URL") or 'http://localhost:8000/logger/new'
 
 client = discord.Client()
 
@@ -91,5 +92,5 @@ def extract_embedded(message):
 
 
 async def send_data(data):
-    r = requests.post(url=database_url, data=data)
+    r = requests.post(url=BACKEND_URL, data=data)
     print(r.text)
