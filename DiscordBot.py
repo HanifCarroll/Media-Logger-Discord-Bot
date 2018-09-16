@@ -4,9 +4,12 @@ import os
 
 from urllib.parse import urlparse
 
-from env import TOKEN
+try:
+    from env import TOKEN
+except ModuleNotFoundError:
+    print('Nope.')
 
-TOKEN = TOKEN or os.environ.get("TOKEN")
+TOKEN = os.environ.get("TOKEN") or TOKEN
 
 print("Bot started...")
 
