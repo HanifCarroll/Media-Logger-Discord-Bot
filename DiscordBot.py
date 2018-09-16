@@ -1,9 +1,12 @@
 import discord
 import requests
+import os
 
 from urllib.parse import urlparse
 
 from env import TOKEN
+
+TOKEN = TOKEN or os.environ.get("TOKEN")
 
 print("Bot started...")
 
@@ -17,10 +20,15 @@ database_url = 'http://localhost:8000/logger/new'
 
 client = discord.Client()
 
-try:
-    client.run(TOKEN)
-except KeyboardInterrupt:
-    client.logout()
+
+def main():
+    try:
+        client.run(TOKEN)
+    except KeyboardInterrupt:
+        client.logout()
+
+
+main()
 
 
 @client.event
