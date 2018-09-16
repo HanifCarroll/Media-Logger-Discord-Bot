@@ -37,6 +37,7 @@ main()
 
 @client.event
 async def on_message(message):
+    await client.send_message(message.channel, 'Hello')
 
     # Check to see if message contains one of our domains
     if any(domain in message.content for domain in domains):
@@ -50,6 +51,7 @@ async def on_message(message):
 
         # If it's YouTube or Spotify, then use the 'embeds' property on the message.
         else:
+            await client.send_message(message.channel, 'Youtube or Spotify detected')
             extracted = extract_embedded(message)
             await send_data(extracted)
 
