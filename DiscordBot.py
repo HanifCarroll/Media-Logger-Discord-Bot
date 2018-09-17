@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 try:
     from env import TOKEN
 except ModuleNotFoundError:
-    print('Nope.')
+    pass
 
 TOKEN = os.environ.get("TOKEN") or TOKEN
 
@@ -25,19 +25,8 @@ BACKEND_URL = os.environ.get(
 client = discord.Client()
 
 
-def main():
-    try:
-        client.run(TOKEN)
-    except KeyboardInterrupt:
-        client.logout()
-
-
-main()
-
-
 @client.event
 async def on_message(message):
-    await client.send_message(message.channel, 'Hello')
 
     # Check to see if message contains one of our domains
     if any(domain in message.content for domain in domains):
@@ -51,13 +40,16 @@ async def on_message(message):
 
         # If it's YouTube or Spotify, then use the 'embeds' property on the message.
         else:
-            await client.send_message(message.channel, 'Youtube or Spotify detected')
             extracted = extract_embedded(message)
             await send_data(extracted)
 
 
 def extract_soundcloud(message):
     url = urlparse(message.content).geturl()
+    track_info = urlparse(url).path.split('/')
+
+    artist = track_info[1]
+    title = (' ').join(track_info[2].split('-'))
     user = message.author.name
     timestamp = message.timestamp
     service = 'Soundcloud'
@@ -65,6 +57,8 @@ def extract_soundcloud(message):
     data = {
         'url': url,
         'username': user,
+        'artist': artist,
+        'title': title,
         'timestamp': timestamp,
         'service_name': service
     }
@@ -74,6 +68,7 @@ def extract_soundcloud(message):
 
 def extract_embedded(message):
     for embed in message.embeds:
+
         url = embed["url"]
         title = embed["title"]
         thumbnail_url = embed["thumbnail"]["url"]
@@ -81,8 +76,15 @@ def extract_embedded(message):
         timestamp = message.timestamp
         service = embed["provider"]["name"]
 
+        if service == 'YouTube':
+            artist = embed["author"]["name"]
+
+        if service == 'Spotify':
+            artist = embed["description"].split("by")[1].split("on Spotify")[0]
+
         data = {
             'url': url,
+            'artist': artist,
             'title': title,
             'thumbnail_url': thumbnail_url,
             'username': user,
@@ -96,3 +98,13 @@ def extract_embedded(message):
 async def send_data(data):
     r = requests.post(url=BACKEND_URL, data=data)
     print(r.text)
+
+
+def main():
+    try:
+        client.run(TOKEN)
+    except KeyboardInterrupt:
+        client.logout()
+
+
+main()
