@@ -1,5 +1,5 @@
 import discord
-import requests
+import aiohttp
 import os
 
 from urllib.parse import urlparse
@@ -46,6 +46,8 @@ def extract_soundcloud(message):
 
 
 def extract_embedded(message):
+    embeds = []
+
     for embed in message.embeds:
 
         url = embed["url"]
@@ -71,12 +73,17 @@ def extract_embedded(message):
             'service_name': service
         }
 
-        return(data)
+        embeds.append(data)
+
+    return(embeds)
 
 
 async def send_data(data):
-    r = requests.post(url=BACKEND_URL, data=data)
-    print(r.text)
+    async with aiohttp.ClientSession() as session:
+        async with session.post(BACKEND_URL, data=data) as response:
+            res = await response.text()
+            print(res)
+
 
 client = discord.Client()
 
@@ -86,7 +93,8 @@ async def on_message(message):
 
     # Check to see if message contains one of our domains
     if any(domain in message.content for domain in domains):
-
+        print(message.content)
+        print(message.embeds)
         # Check which domain was found
 
         # If it's SoundCloud, manually extract the URL
