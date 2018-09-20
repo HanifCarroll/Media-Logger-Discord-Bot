@@ -20,15 +20,16 @@ print('Bot started...')
 domains = [
     'https://soundcloud.com/',
     'https://www.youtube.com/',
+    'https://youtu.be/',
     'https://open.spotify.com/'
 ]
 
 
 def correct_name(service):
 
-    # Format the name to something the database can work with
+    # Format the name to something the database can work with.
 
-    if 'youtube' in service:
+    if 'youtube' in service or 'youtu.be' in service:
         return 'YouTube'
 
     if 'spotify' in service:
@@ -81,13 +82,16 @@ def extract_embedded(message, media_objects):
 
     # Add details specific to the embedded objects to our media_objects.
 
+    # We didn't find any embeds in the message (Thanks, Discord), so
+    # return the original list.
     if not message.embeds:
-        # print('No embeds found.')
         return media_objects
 
-    # print('Embeds found')
+    # Embeds were found, so let's extract some data from them.
     for media_object in media_objects:
         for embed in message.embeds:
+
+            # Check to see if we're assigning to the right media_object.
             if embed['url'] == media_object['url']:
                 title = embed['title']
                 thumbnail_url = embed['thumbnail']['url']
@@ -112,18 +116,19 @@ async def send_data(media_object):
     async with aiohttp.ClientSession() as session:
         async with session.post(BACKEND_URL, data=media_object) as response:
             res = await response.text()
+            print(res)
 
 
 async def send_gathered_data(media_objects):
     tasks = []
 
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession():
         if media_objects:
             for media_object in media_objects:
                 task = asyncio.ensure_future(send_data(media_object))
                 tasks.append(task)
 
-        responses = await asyncio.gather(*tasks)
+        await asyncio.gather(*tasks)
 
 
 client = discord.Client()
@@ -132,7 +137,7 @@ client = discord.Client()
 @client.event
 async def on_message(message):
 
-    # Check to see if message contains one of our domains
+    # Check to see if message contains one of our domains.
 
     if any(domain in message.content for domain in domains):
         initial_media_objects = create_media_objects(message)
