@@ -2,6 +2,7 @@ import discord
 import aiohttp
 import asyncio
 import os
+import time
 
 from urllib.parse import urlparse
 
@@ -49,13 +50,15 @@ def create_media_objects(message):
     URLs = urlparse(message.content).geturl().split()
     media_objects = []
     for URL in URLs:
-        service = urlparse(URL).netloc
-        media_objects.append({
-            'username': username,
-            'timestamp': timestamp,
-            'url': URL,
-            'service_name': correct_name(service)
-        })
+        # Protects against Soundcloud shares from mobile.
+        if 'https://' in URL:
+            service = urlparse(URL).netloc
+            media_objects.append({
+                'username': username,
+                'timestamp': timestamp,
+                'url': URL,
+                'service_name': correct_name(service)
+            })
 
     return media_objects
 
@@ -84,7 +87,7 @@ def extract_embedded(message, media_objects):
 
     # We didn't find any embeds in the message (Thanks, Discord), so
     # return the original list.
-    if not message.embeds:
+    if message.embeds == []:
         return media_objects
 
     # Embeds were found, so let's extract some data from them.
@@ -136,9 +139,7 @@ client = discord.Client()
 
 @client.event
 async def on_message(message):
-
     # Check to see if message contains one of our domains.
-
     if any(domain in message.content for domain in domains):
         initial_media_objects = create_media_objects(message)
 
