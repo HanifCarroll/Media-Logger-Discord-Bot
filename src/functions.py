@@ -1,22 +1,9 @@
-import discord
 import aiohttp
 import asyncio
 import os
-import time
 
 from urllib.parse import urlparse
-
-try:
-    from env import TOKEN
-except ModuleNotFoundError:
-    pass
-
-TOKEN = os.environ.get('TOKEN') or TOKEN
-
-BACKEND_URL = os.environ.get(
-    'BACKEND_URL') or 'http://localhost:8000/logger/new'
-
-print('Bot started...')
+from config import BACKEND_URL, linux_rant
 
 domains = [
     'https://soundcloud.com/',
@@ -24,7 +11,6 @@ domains = [
     'https://youtu.be/',
     'https://open.spotify.com/'
 ]
-
 
 def correct_name(service):
 
@@ -46,7 +32,7 @@ def create_media_objects(message):
     # we can gather without relying on buggy 'message.embed' contents.
 
     username = message.author.name
-    timestamp = message.timestamp
+    timestamp = message.created_at
     URLs = urlparse(message.content).geturl().split()
     media_objects = []
     for URL in URLs:
@@ -95,15 +81,15 @@ def extract_embedded(message, media_objects):
         for embed in message.embeds:
 
             # Check to see if we're assigning to the right media_object.
-            if embed['url'] == media_object['url']:
-                title = embed['title']
-                thumbnail_url = embed['thumbnail']['url']
+            if embed.url == media_object['url']:
+                title = embed.title
+                thumbnail_url = embed.thumbnail.url
 
                 if media_object['service_name'] in ['YouTube', 'Soundcloud']:
-                    artist = embed['author']['name']
+                    artist = embed.author.name
 
                 if media_object['service_name'] == 'Spotify':
-                    artist = embed['description'].split(
+                    artist = embed.description.split(
                         'by')[1].split('on Spotify')[0]
 
                 media_object.update({
@@ -132,30 +118,3 @@ async def send_gathered_data(media_objects):
                 tasks.append(task)
 
         await asyncio.gather(*tasks)
-
-
-client = discord.Client()
-
-
-@client.event
-async def on_message(message):
-    # Check to see if message contains one of our domains.
-    if any(domain in message.content for domain in domains):
-        initial_media_objects = create_media_objects(message)
-
-        populate_soundcloud = extract_soundcloud(initial_media_objects)
-
-        populated_media_objects = extract_embedded(
-            message, populate_soundcloud)
-
-        await send_gathered_data(populated_media_objects)
-
-
-def main():
-    try:
-        client.run(TOKEN)
-    except KeyboardInterrupt:
-        client.logout()
-
-
-main()

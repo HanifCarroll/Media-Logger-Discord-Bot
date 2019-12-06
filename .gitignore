@@ -1,2 +1,8 @@
-env.py
-env
+/bin
+/include
+/share
+/lib
+/lib64
+pyvenv.cfg
+/share
+src/config.py
