@@ -6,4 +6,5 @@
 /src/__pycache__/
 pyvenv.cfg
 /share
+/env
 src/config.py
