@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import discord
 
 from config import TOKEN
