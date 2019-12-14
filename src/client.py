@@ -1,10 +1,13 @@
 import discord
 
+from time import time
 from functions import *
 from config import linux_rant
 from dictionary import getDefinition
 
 client = discord.Client()
+
+last_linux_message_time = 0
 
 @client.event
 async def on_message(message):
@@ -21,9 +24,13 @@ async def on_message(message):
             definition = getDefinition(word)
             await message.channel.send(definition)
 
-    if 'linux' in content:
-         await message.channel.send(linux_rant)
+    if 'linux' in content and 'gnu' not in content:
+        global last_linux_message_time
 
+        if time() - last_linux_message_time >= 60:
+            last_linux_message_time = time()
+            await message.channel.send(linux_rant)
+            
     # Check to see if message contains one of our domains.
     if any(domain in content for domain in domains):
         initial_media_objects = create_media_objects(message)
