@@ -22,7 +22,7 @@ async def on_message(message):
 
         if split[0] == 'define' and split[1]:
             word = split[1]
-            definition = getDefinition(word)
+            definition = get_definition(word)
             await message.channel.send(definition)
 
     if 'linux' in content and 'gnu' not in content:
