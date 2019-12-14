@@ -12,6 +12,7 @@ domains = [
     'https://open.spotify.com/'
 ]
 
+
 def correct_name(service):
 
     # Format the name to something the database can work with.
@@ -64,7 +65,7 @@ def extract_soundcloud(media_objects):
                 'title': title.title()
             })
 
-    return(media_objects)
+    return media_objects
 
 
 def extract_embedded(message, media_objects):
@@ -73,7 +74,7 @@ def extract_embedded(message, media_objects):
 
     # We didn't find any embeds in the message (Thanks, Discord), so
     # return the original list.
-    if message.embeds == []:
+    if not message.embeds:
         return media_objects
 
     # Embeds were found, so let's extract some data from them.

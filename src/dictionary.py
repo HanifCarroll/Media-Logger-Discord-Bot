@@ -4,7 +4,8 @@ import requests
 
 BASE_URL = f'https://od-api.oxforddictionaries.com/api/v2/entries/en-us/'
 
-def getDefinition(word):
+
+def get_definition(word):
     if not word:
         return "Something went wrong."
 

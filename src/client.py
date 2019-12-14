@@ -9,6 +9,7 @@ client = discord.Client()
 
 last_linux_message_time = 0
 
+
 @client.event
 async def on_message(message):
     if message.author.bot:
