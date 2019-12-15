@@ -3,7 +3,7 @@ import discord
 from time import time
 from functions import *
 from config import linux_rant
-from dictionary import getDefinition
+from dictionary import get_definition
 
 client = discord.Client()
 
