@@ -23,9 +23,10 @@ async def on_message(message):
         if split[0] == 'define' and split[1]:
             if split[1] == 'stebin':
                 await message.channel.send('A bicc ass nibba')
-            word = split[1]
-            definition = get_definition(word)
-            await message.channel.send(definition)
+            else:
+                word = split[1]
+                definition = get_definition(word)
+                await message.channel.send(definition)
 
     if 'linux' in content and 'gnu' not in content:
         global last_linux_message_time
