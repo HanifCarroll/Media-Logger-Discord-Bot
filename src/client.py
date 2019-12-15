@@ -17,6 +17,9 @@ async def on_message(message):
 
     content = message.content.lower()
 
+    if content == 'hehe':
+        await message.channel.send('tymen')
+
     if 'define' in content:
         split = content.split()
 
