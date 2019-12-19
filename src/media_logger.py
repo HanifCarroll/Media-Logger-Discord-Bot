@@ -119,3 +119,15 @@ async def send_gathered_data(media_objects):
                 tasks.append(task)
 
         await asyncio.gather(*tasks)
+
+
+async def collect_media_data(message, content):
+    # Check to see if message contains one of our domains.
+    if any(domain in content for domain in domains):
+        initial_media_objects = create_media_objects(message)
+
+        populate_soundcloud = extract_soundcloud(initial_media_objects)
+
+        populated_media_objects = extract_embedded(message, populate_soundcloud)
+
+        await send_gathered_data(populated_media_objects)
