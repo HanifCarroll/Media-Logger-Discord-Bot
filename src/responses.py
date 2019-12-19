@@ -9,10 +9,7 @@ last_linux_message_time = 0
 async def send_hehe_tymen(message, content):
     global last_tymen_time
 
-    if message.content.lower() != 'hehe':
-        return
-
-    if time() - last_tymen_time <= 30:
+    if message.content.lower() != 'hehe' or time() - last_tymen_time <= 30:
         return
 
     # if message.author.id == 141338854312378368:
