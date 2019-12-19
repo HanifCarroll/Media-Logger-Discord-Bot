@@ -15,7 +15,6 @@ async def send_hehe_tymen(message, content):
     if time() - last_tymen_time <= 30:
         return
 
-
     # if message.author.id == 141338854312378368:
     # :stebin:
     if message.author.id == 482708877276610560:
@@ -30,8 +29,6 @@ async def send_hehe_tymen(message, content):
 
 
 async def send_linux_rant(message, content):
-    content = message.content.lower()
-
     if 'linux' in content and 'gnu' not in content:
         global last_linux_message_time
 
